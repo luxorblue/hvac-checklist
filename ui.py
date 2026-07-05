@@ -304,7 +304,10 @@ class UI:
             return
         
         for item_name, entry in self.reading_entries.items():
-            self.job_manager.update_reading(self.current_unit, item_name, entry.get())
+            try:
+                self.job_manager.update_reading(self.current_unit, item_name, entry.get())
+            except tk.TclError:
+                continue
     
     def show_unit_checklist(self, parent, unit):
         """Display checklist for current unit"""
