@@ -30,6 +30,7 @@ class UI:
         # Current state
         self.current_unit = 1
         self.current_item_index = 0
+        self.reading_entries = {}
         
         # Setup UI
         self.setup_styles()
@@ -292,9 +293,26 @@ class UI:
     
     def select_unit(self, unit_num):
         """Select a different unit"""
+        self.sync_current_unit_readings()
         self.current_unit = unit_num
         self.current_item_index = 0
         self.show_active_job()
+
+    def sync_current_unit_readings(self):
+        """Persist current unit entry fields to job manager"""
+        if not self.reading_entries:
+            return
+        
+        for item_name, entry in self.reading_entries.items():
+            try:
+                self.save_reading_value(self.current_unit, item_name, entry.get())
+            except tk.TclError:
+                # Entry may be destroyed during screen transitions; skip stale refs.
+                continue
+
+    def save_reading_value(self, unit_number, item_name, value):
+        """Persist one reading value to job manager"""
+        self.job_manager.update_reading(unit_number, item_name, value)
     
     def show_unit_checklist(self, parent, unit):
         """Display checklist for current unit"""
@@ -326,6 +344,7 @@ class UI:
         
         # Add checklist items
         readings = unit.get("readings", {})
+        self.reading_entries = {}
         
         if not readings:
             # No readings - show message
@@ -361,11 +380,13 @@ class UI:
                 entry = tk.Entry(value_frame, font=self.font_small, width=20)
                 entry.insert(0, reading_data.get("value", "") or "")
                 entry.pack(side=tk.LEFT, padx=5, fill=tk.X, expand=True)
+                self.reading_entries[item_name] = entry
                 
                 def save_value(e=None, entry_ref=entry, item=item_name, u=unit["unit_number"]):
-                    self.job_manager.update_reading(u, item, entry_ref.get())
+                    self.save_reading_value(u, item, entry_ref.get())
                 
                 entry.bind("<Return>", save_value)
+                entry.bind("<FocusOut>", save_value)
         
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
@@ -459,6 +480,7 @@ class UI:
     
     def save_job(self):
         """Save current job"""
+        self.sync_current_unit_readings()
         if self.job_manager.save_job():
             messagebox.showinfo("Success", "Job saved successfully!")
         else:
