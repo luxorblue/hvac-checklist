@@ -6,6 +6,7 @@ Manages jobs, units, and reading data
 import json
 import os
 from datetime import datetime
+from copy import deepcopy
 from config import CHECKLISTS, DATA_DIR
 
 class JobManager:
@@ -140,14 +141,17 @@ class JobManager:
     def load_job(self, job_filename):
         """Load a saved job as current job"""
         if job_filename in self.jobs:
-            self.current_job = self.jobs[job_filename]
+            # Make a deep copy to avoid aliasing issues
+            self.current_job = deepcopy(self.jobs[job_filename])
             
             # Convert unit keys from strings back to integers
             # (JSON serialization converts int keys to strings)
             if "units" in self.current_job:
-                self.current_job["units"] = {
-                    int(k): v for k, v in self.current_job["units"].items()
-                }
+                new_units = {}
+                for k, v in self.current_job["units"].items():
+                    unit_key = int(k) if isinstance(k, str) else k
+                    new_units[unit_key] = v
+                self.current_job["units"] = new_units
             
             print(f"Loaded current job: {job_filename}")
             return True
