@@ -1,0 +1,103 @@
+{
+  "name": "aa",
+  "created": "2026-06-28T17:11:45.710593",
+  "units": {
+    "1": {
+      "unit_number": 1,
+      "system_type": "Furnace System",
+      "readings": {
+        "Outdoor fan capacitor": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Compressor capacitor": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Start capacitor": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Outdoor fan amps": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Compressor amps": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Pressures": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Blower motor capacitor": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Blower motor amps": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Evaporator coil condition": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Evaporator coil drain pan condition": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Blower wheel condition": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Temperature split": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Filter": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Surge protection": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Drain condition": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Inducer motor": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "Furnace safeties": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        },
+        "CO detector": {
+          "value": "",
+          "notes": "",
+          "checked": false
+        }
+      },
+      "notes": ""
+    }
+  }
+}
