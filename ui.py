@@ -261,7 +261,11 @@ class UI:
         # Checklist
         unit = self.job_manager.get_unit(self.current_unit)
         if unit:
+            print(f"DEBUG: Unit data: {unit}")
+            print(f"DEBUG: Unit readings: {unit.get('readings', {})}")
             self.show_unit_checklist(content, unit)
+        else:
+            print(f"DEBUG: Unit {self.current_unit} not found!")
         
         # ===== FOOTER =====
         footer = tk.Frame(self.root, bg=COLOR_BG)
@@ -325,36 +329,50 @@ class UI:
         canvas.configure(yscrollcommand=scrollbar.set)
         
         # Add checklist items
-        for item_name, reading_data in unit["readings"].items():
-            item_frame = tk.Frame(scrollable_frame, bg="white", relief=tk.RAISED, bd=1)
-            item_frame.pack(fill=tk.X, pady=3, padx=3)
-            
-            # Checkbox
-            var = tk.BooleanVar(value=reading_data["checked"])
-            check = tk.Checkbutton(
-                item_frame,
-                text=item_name,
+        readings = unit.get("readings", {})
+        print(f"DEBUG: Number of readings: {len(readings)}")
+        
+        if not readings:
+            # No readings - show message
+            empty_label = tk.Label(
+                scrollable_frame,
+                text="No readings for this unit",
                 font=self.font_normal,
-                variable=var,
-                bg="white",
-                command=lambda vr=var, i=item_name, u=unit["unit_number"]: self.update_reading(u, i, vr.get())
+                bg=COLOR_BG,
+                fg=COLOR_TEXT
             )
-            check.pack(anchor=tk.W, padx=10, pady=3)
-            
-            # Value entry
-            value_frame = tk.Frame(item_frame, bg="white")
-            value_frame.pack(fill=tk.X, padx=20, pady=3)
-            
-            tk.Label(value_frame, text="Value:", font=self.font_small, bg="white").pack(side=tk.LEFT, padx=5)
-            
-            entry = tk.Entry(value_frame, font=self.font_small, width=15)
-            entry.insert(0, reading_data["value"] or "")
-            entry.pack(side=tk.LEFT, padx=5)
-            
-            def save_value(e=None, entry_ref=entry, item=item_name, u=unit["unit_number"]):
-                self.job_manager.update_reading(u, item, entry_ref.get())
-            
-            entry.bind("<Return>", save_value)
+            empty_label.pack(pady=20)
+        else:
+            for item_name, reading_data in readings.items():
+                item_frame = tk.Frame(scrollable_frame, bg="white", relief=tk.RAISED, bd=1)
+                item_frame.pack(fill=tk.X, pady=3, padx=3)
+                
+                # Checkbox
+                var = tk.BooleanVar(value=reading_data.get("checked", False))
+                check = tk.Checkbutton(
+                    item_frame,
+                    text=item_name,
+                    font=self.font_normal,
+                    variable=var,
+                    bg="white",
+                    command=lambda vr=var, i=item_name, u=unit["unit_number"]: self.update_reading(u, i, vr.get())
+                )
+                check.pack(anchor=tk.W, padx=10, pady=3)
+                
+                # Value entry
+                value_frame = tk.Frame(item_frame, bg="white")
+                value_frame.pack(fill=tk.X, padx=20, pady=3)
+                
+                tk.Label(value_frame, text="Value:", font=self.font_small, bg="white").pack(side=tk.LEFT, padx=5)
+                
+                entry = tk.Entry(value_frame, font=self.font_small, width=15)
+                entry.insert(0, reading_data.get("value", "") or "")
+                entry.pack(side=tk.LEFT, padx=5)
+                
+                def save_value(e=None, entry_ref=entry, item=item_name, u=unit["unit_number"]):
+                    self.job_manager.update_reading(u, item, entry_ref.get())
+                
+                entry.bind("<Return>", save_value)
         
         canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
