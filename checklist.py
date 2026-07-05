@@ -141,6 +141,14 @@ class JobManager:
         """Load a saved job as current job"""
         if job_filename in self.jobs:
             self.current_job = self.jobs[job_filename]
+            
+            # Convert unit keys from strings back to integers
+            # (JSON serialization converts int keys to strings)
+            if "units" in self.current_job:
+                self.current_job["units"] = {
+                    int(k): v for k, v in self.current_job["units"].items()
+                }
+            
             print(f"Loaded current job: {job_filename}")
             return True
         print(f"Job not found: {job_filename}")
