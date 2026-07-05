@@ -305,9 +305,14 @@ class UI:
         
         for item_name, entry in self.reading_entries.items():
             try:
-                self.job_manager.update_reading(self.current_unit, item_name, entry.get())
+                self.save_reading_value(self.current_unit, item_name, entry.get())
             except tk.TclError:
+                # Entry may be destroyed during screen transitions; skip stale refs.
                 continue
+
+    def save_reading_value(self, unit_number, item_name, value):
+        """Persist one reading value to job manager"""
+        self.job_manager.update_reading(unit_number, item_name, value)
     
     def show_unit_checklist(self, parent, unit):
         """Display checklist for current unit"""
@@ -378,7 +383,7 @@ class UI:
                 self.reading_entries[item_name] = entry
                 
                 def save_value(e=None, entry_ref=entry, item=item_name, u=unit["unit_number"]):
-                    self.job_manager.update_reading(u, item, entry_ref.get())
+                    self.save_reading_value(u, item, entry_ref.get())
                 
                 entry.bind("<Return>", save_value)
                 entry.bind("<FocusOut>", save_value)
