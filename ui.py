@@ -245,17 +245,18 @@ class UI:
         
         unit_buttons = tk.Frame(unit_frame, bg=COLOR_BG)
         unit_buttons.pack(side=tk.LEFT, fill=tk.X, padx=5)
-        
-        for i in range(1, len(job["units"]) + 1):
-            btn_bg = COLOR_STATUS if i == self.current_unit else COLOR_BUTTON
+
+        unit_keys = sorted(job.get("units", {}).keys())
+        for unit_num in unit_keys:
+            btn_bg = COLOR_STATUS if unit_num == self.current_unit else COLOR_BUTTON
             btn = tk.Button(
                 unit_buttons,
-                text=f"Unit {i}",
+                text=f"Unit {unit_num}",
                 width=8,
                 bg=btn_bg,
                 fg="white",
                 font=BUTTON_FONT,
-                command=lambda u=i: self.select_unit(u)
+                command=lambda u=unit_num: self.select_unit(u)
             )
             btn.pack(side=tk.LEFT, padx=3)
         
@@ -471,7 +472,8 @@ class UI:
     def load_saved_job(self, job_filename):
         """Load a saved job"""
         if self.job_manager.load_job(job_filename):
-            self.current_unit = 1
+            units = self.job_manager.get_current_job().get("units", {})
+            self.current_unit = sorted(units.keys())[0] if units else 1
             self.current_item_index = 0
             messagebox.showinfo("Success", f"Loaded job: {job_filename}")
             self.show_active_job()
